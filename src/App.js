@@ -1,19 +1,21 @@
-import { Route, Routes } from 'react-router-dom';
 import './App.css';
+import { useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import FileList from './Components/FileList';
 import FileShow from './Components/FileShow';
+import Header from './Components/Header';
+import PathSet from './Components/PathSet';
 
 function App() {
+  const [txtDirectory, setTxtDirectory] = useState('');
+  console.log('txtDirectory', txtDirectory)
   return (
     <div>
-      <h1 class="text-3xl font-bold underline flex justify-center mb-3">
-        File Import
-      </h1>
+      <Header/>
       <Routes>
-        {/* <Route path='/' element={<PathSet />}/> */}
-        {/* <Route path="/" element={<App />} /> */}
         <Route path='/' element={<FileList />}/>
         <Route path='/fileshow/:id' element={<FileShow />}/>
+        <Route path='/pathset' element={<PathSet setTxtDirectory={setTxtDirectory}/>}/>
       </Routes>
     </div>
   );

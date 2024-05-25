@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const FileShow = () => {
   const [csvFile, setCsvFile] = useState(null);
@@ -45,21 +47,32 @@ const FileShow = () => {
   };
 
   const handleDownload = (fileName) => {
-  
+    const input = document.getElementById('pdf-content');
+
+    html2canvas(input, { scrollY: -window.scrollY }).then((canvas) => {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight); // A4 size: 210mm x 297mm
+      pdf.save(`${fileName}.pdf`);
+    });
   };
 
   if (!csvFile) {
-    return <div className="flex items-center justify-center mt-20 loading-spinner-container">
-    <img
-      src="https://loading.io/assets/mod/spinner/spinner/lg.gif"
-      alt="Loading..."
-      className="loading-spinner"
-    />
-</div>;
+    return (
+      <div className="flex items-center justify-center mt-20 loading-spinner-container">
+        <img
+          src="https://loading.io/assets/mod/spinner/spinner/lg.gif"
+          alt="Loading..."
+          className="loading-spinner"
+        />
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto mt-8">
+    <div className="container mx-auto mt-8" id="pdf-content" style={{ width: '210mm', minHeight: '297mm', padding: '20px' }}>
       <div className="mb-8">
         <h1 className="text-2xl font-bold mb-4">{csvFile.fileName}</h1>
         <div className="overflow-x-auto">
@@ -68,11 +81,11 @@ const FileShow = () => {
             {renderTableRows(csvFile.data)}
           </table>
         </div>
-        {/* <div className="mt-4">
+        <div className="mt-4">
           <button onClick={() => handleDownload(csvFile.fileName)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Download PDF
           </button>
-        </div> */}
+        </div>
       </div>
     </div>
   );
