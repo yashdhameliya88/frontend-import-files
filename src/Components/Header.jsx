@@ -1,6 +1,5 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import img1 from './download.png'
 import myFile from './../Files/server-win.exe'
 const Header = () => {
 
