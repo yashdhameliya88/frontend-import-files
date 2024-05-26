@@ -6,6 +6,7 @@ const PathSet = ({ setTxtDirectory }) => {
   const [directory, setDirectory] = useState('');
   const [csvDirectory, setCsvDirectory] = useState('');
   const [loading, setLoading] = useState(false); // State to track loading
+  const [serverConnected, setServerConnected] = useState(true); // State to track server connection
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -21,6 +22,7 @@ const PathSet = ({ setTxtDirectory }) => {
       navigate('/');
     } catch (error) {
       console.error('Error setting directory:', error);
+      setServerConnected(false); // Set server connection status to false
     } finally {
       setLoading(false); // Stop loading
     }
@@ -33,27 +35,34 @@ const PathSet = ({ setTxtDirectory }) => {
       try {
         const response = await axios.get('http://localhost:3001/get-directory');
         setCsvDirectory(response.data.csvDirectory);
+        setServerConnected(true); // Set server connection status to true
       } catch (error) {
         console.error('Error fetching CSV directory:', error);
+        setServerConnected(false); // Set server connection status to false
       } finally {
         setLoading(false); // Stop loading
       }
     };
     fetchCsvDirectory();
+
+    // Fetch server connection status from backend
+    const fetchServerStatus = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/server-active');
+        const { serverActive } = response.data;
+        setServerConnected(serverActive);
+      } catch (error) {
+        console.error('Error fetching server status:', error);
+        setServerConnected(false); // Set server connection status to false on error
+      }
+    };
+    fetchServerStatus();
   }, []);
 
   return (
-   <>
-        {loading ? (
-          <div className="flex items-center justify-center mt-20 loading-spinner-container">
-            <img
-              src="https://loading.io/assets/mod/spinner/spinner/lg.gif"
-              alt="Loading..."
-              className="loading-spinner"
-            />
-          </div>
-        ) : (
-          <section className="text-gray-600 body-font relative">
+    <>
+      {!loading && serverConnected ? (
+        <section className="text-gray-600 body-font relative">
           <div className="container px-5 py-24 mx-auto">
             <div className="flex flex-col text-center w-full mb-12">
               <h1 className="sm:text-3xl text-2xl font-medium title-font mb-2 text-gray-900">Set Your Path</h1>
@@ -82,16 +91,22 @@ const PathSet = ({ setTxtDirectory }) => {
               </div>
             </form>
             {csvDirectory ? (
-          <p className="text-gray-600 text-center mt-4">Current CSV Directory: {csvDirectory}</p>
-          ) : (
-            <p className="text-gray-600 text-center mt-4">Your CSV directory path is not set.</p>
-          )}
-          
-           </div>
-           </section>
-        )}
-        </>
-     
+              <p className="text-gray-600 text-center mt-4">Current CSV Directory: {csvDirectory}</p>
+            ) : (
+              <p className="text-gray-600 text-center mt-4">Your CSV directory path is not set.</p>
+            )}
+          </div>
+        </section>
+      ) : (
+        <section className="text-gray-600 body-font relative">
+          <div className="container px-5 py-24 mx-auto">
+            <div className="flex flex-col text-center w-full mb-12">
+              <h1 className="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">Server is not connected. Please check your Server connection.</h1>
+            </div>
+          </div>
+        </section>
+      )}
+    </>
   );
 };
 
