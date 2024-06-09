@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const FileList = () => {
-    const { id } = useParams();
+const KapanList = () => {
     const [csvFiles, setCsvFiles] = useState([]);
     const [csvPathSet, setCsvPathSet] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [serverConnected, setServerConnected] = useState(true); // State for server connection
     const navigate = useNavigate();
-    const kapanName = ["A=29", "B=29", "C=29"];
+    const kapanName = ["A=29", "B=29", "C=29", "D=29"];
+console.log('kapanName', kapanName);
+
+const filteredKapanName = kapanName.filter((name) => {
+    const prefix = name
+    return csvFiles.some((ele) => ele.fileName.startsWith(prefix));
+});
+
+console.log(filteredKapanName);
+
+// console.log(filteredData);
+console.log("filteredKapanName",filteredKapanName);
     
-    const filteredData = csvFiles.filter((ele) => {
-        const prefix = ele.fileName.split('-')[0];
-        return id.includes(prefix);
-    });
-    // const mappedData = filteredData.data.map((ele)=>ele["Dia."])
-    console.log('mappedDataaaaaaaaaa',filteredData)
-    // const finalData = mappedData.find((val)=>val["Dia."])
-    // console.log('finalData', finalData)
+    // console.log('csvFilesData', csvFilesData)
     const kapanReport = csvFiles.find((ele)=>ele.fileName.split('-')[0] === kapanName)
     console.log('kapanReport', kapanReport)
     useEffect(() => {
@@ -66,9 +69,7 @@ const FileList = () => {
         }
     };
 
-    const handleOpen = (id) => {
-        navigate(`/fileshow/${id}`);
-    };  
+   
 
     if (!serverConnected) {
         return (
@@ -119,6 +120,13 @@ const FileList = () => {
         );
     }
 
+    const handleOpen = (id) => {
+        navigate(`/filelist/${id}`);
+    };  
+
+    const handleReport = (id) => {
+        navigate(`/kapanreport/${id}`)
+    }
     console.log('csvFiles', csvFiles)
     return (
         <div className="relative overflow-x-auto">
@@ -127,45 +135,42 @@ const FileList = () => {
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" className="px-6 py-3">
-                            File Index Number
+                            Kapan Index Number
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            File Nameaaaa
-                        </th>
-                        <th>
-                            aaa
+                            Kapan Name
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Show CSV
+                            Show
                         </th>
-                        
+                        <th scope="col" className="px-6 py-3">
+                            Report
+                        </th>
                     </tr>
                 </thead>
                 {/* Table Body */}
                 <tbody>
-                    {filteredData.map((file, index) => (
+                    {filteredKapanName.map((file, index) => (
                         <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 {index + 1}
                             </th>
                             <td className="px-6 py-4">
-                                {file.fileName}
-                                {/* {file.fileName.split('-')[0]} */}
+                                {file}
                             </td>
-                            {file.data.map((ele)=>(
-                            <td>
-                                {ele["Dia."]}
-                            </td>
-                            ))}
-                            <td className="px-6 py-4 cursor-pointer" onClick={() => handleOpen(file.fileName)}>
+                            <td className="px-6 py-4 cursor-pointer" onClick={() => handleOpen(file)}>
+                            {/* <td className="px-6 py-4 cursor-pointer"> */}
                                 <VisibilityIcon />
                             </td>
+                            <td className="px-6 py-4 cursor-pointer" onClick={()=>handleReport(file)}>
+                                Show Report
+                            </td>
                         </tr>
-                    ))} 
+                    ))}
                 </tbody>
             </table>
         </div>
     );
 };
 
-export default FileList;
+export default KapanList;

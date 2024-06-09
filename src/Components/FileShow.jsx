@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 const FileShow = () => {
+  
   const [csvFile, setCsvFile] = useState(null);
   const [loading, setLoading] = useState(true); // State to track loading
   const [serverConnected, setServerConnected] = useState(true); // State to track server connection
@@ -11,10 +12,11 @@ const FileShow = () => {
     fetchServerStatus(); // Fetch server connection status on component mount
     fetchCsvData();
   }, [id]);
-
+  console.log('csvFile.data', csvFile)
   const fetchServerStatus = async () => {
     try {
       const response = await fetch('http://localhost:3001/server-active');
+
       const { serverActive } = await response.json();
       setServerConnected(serverActive);
     } catch (error) {
@@ -35,6 +37,7 @@ const FileShow = () => {
           return response.json();
         })
         .then(data => {
+          console.log('dataaaaa', data)
           setCsvFile(data);
         })
         .catch(error => {
@@ -95,21 +98,52 @@ const FileShow = () => {
     );
   }
 
+  
+  console.log('csvFile.data', csvFile.data)
+  // const num1 =parseFloat(csvFile.data.find((ele)=>ele["Dia."] == "1.33")["R. P. Ct."])
+  // const num2 =parseFloat(csvFile.data.find((ele)=>ele["Dia."] == "1.32")["R. P. Ct."])
+  // const total = num1 + num2;
+  // console.log('total', total)
+  // // console.log('csvFiledata', csvFile.data.find((ele)=>ele.Clarity).Clarity)
+  // console.log('csvFiledata', csvFile.data.find((ele)=>ele["No."])["R. P. Ct."])
   return (
-    <div className="container mx-auto mt-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-4">{csvFile.fileName}</h1>
-        <div className="overflow-x-auto">
-          <table className="table-auto border-collapse border border-gray-400">
-            {renderTableHeaders(Object.keys(csvFile.data[0]))}
-            {renderTableRows(csvFile.data)}
-          </table>
-        </div>
-        {/* <div className="mt-4">
-          <button onClick={() => handleDownload(csvFile.fileName)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Download PDF
-          </button>
-        </div> */}
+    <div className="w-full">
+      <div className="flex justify-between mt-3">
+      <h1 className="text-2xl font-bold mb-4">CSV Details</h1>
+      </div>
+      <div className="table-container" style={{ maxHeight: "500px", overflowY: "auto" }}>
+        <table className="w-full border-collapse">
+          <thead className="sticky top-0 z-10">
+            <tr className="bg-blue-200 font-bold">
+              <th>No.</th>
+              <th>R. Ct.</th>
+              <th>T. Po. Ct.</th>
+              <th>T. Po. %</th>
+              <th>R. P. Ct.</th>
+              <th>P. Po. Ct.</th>
+              <th>Dia.</th>
+              <th>Shape</th>
+              <th>Co.</th>
+              <th>Clarity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {csvFile.data.map((data, index) => (
+              <tr style={{ height: '25px', backgroundColor: 'white' }} key={index}>
+                <td className="border">{data["No."]}</td>
+                <td className="border">{data["R. Ct."]}</td>
+                <td className="border">{data["T. Po. Ct."]}</td>
+                <td className="border">{data["T. Po. %"]}</td>
+                <td className="border">{data["R. P. Ct."]}</td>
+                <td className="border">{data["P. Po. Ct."]}</td>
+                <td className="border">{data["Dia."]}</td>
+                <td className="border">{data["Shape"]}</td>
+                <td className="border">{data["Co."]}</td>
+                <td className="border">{data["Clarity"]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

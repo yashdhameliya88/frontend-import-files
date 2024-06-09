@@ -5,6 +5,8 @@ import FileList from './Components/FileList';
 import FileShow from './Components/FileShow';
 import Header from './Components/Header';
 import PathSet from './Components/PathSet';
+import KapanList from './Components/KapanList';
+import KapanReport from './Components/KapanReport';
 
 function App() {
   const [txtDirectory, setTxtDirectory] = useState('');
@@ -13,8 +15,10 @@ function App() {
     <div>
       <Header/>
       <Routes>
-        <Route path='/' element={<FileList />}/>
+        <Route path='/' element={<KapanList />}/>
+        <Route path='/filelist/:id' element={<FileList />}/>
         <Route path='/fileshow/:id' element={<FileShow />}/>
+        <Route path='/kapanreport/:id' element={<KapanReport />}/>
         <Route path='/pathset' element={<PathSet setTxtDirectory={setTxtDirectory}/>}/>
       </Routes>
     </div>

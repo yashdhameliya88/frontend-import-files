@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const FileList = () => {
+const KapanReport = () => {
     const { id } = useParams();
     const [csvFiles, setCsvFiles] = useState([]);
     const [csvPathSet, setCsvPathSet] = useState(true);
@@ -10,15 +10,14 @@ const FileList = () => {
     const [serverConnected, setServerConnected] = useState(true); // State for server connection
     const navigate = useNavigate();
     const kapanName = ["A=29", "B=29", "C=29"];
+console.log('kapanName', kapanName);
+
+const filteredData = csvFiles.filter((ele) => {
+    const prefix = ele.fileName.split('-')[0];
+    return id.includes(prefix);
+});
     
-    const filteredData = csvFiles.filter((ele) => {
-        const prefix = ele.fileName.split('-')[0];
-        return id.includes(prefix);
-    });
-    // const mappedData = filteredData.data.map((ele)=>ele["Dia."])
-    console.log('mappedDataaaaaaaaaa',filteredData)
-    // const finalData = mappedData.find((val)=>val["Dia."])
-    // console.log('finalData', finalData)
+    console.log('filteredDatassssssss', filteredData)
     const kapanReport = csvFiles.find((ele)=>ele.fileName.split('-')[0] === kapanName)
     console.log('kapanReport', kapanReport)
     useEffect(() => {
@@ -26,6 +25,7 @@ const FileList = () => {
         fetchCsvData();
     }, []);
 
+    console.log('filteredDataaaaaaaaaaaaaaaaaaaa', filteredData.map((ele)=>ele.data))
     const fetchServerStatus = async () => {
         try {
             const response = await fetch('http://localhost:3001/server-active');
@@ -127,13 +127,10 @@ const FileList = () => {
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" className="px-6 py-3">
-                            File Index Number
+                            Report
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            File Nameaaaa
-                        </th>
-                        <th>
-                            aaa
+                            File Name
                         </th>
                         <th scope="col" className="px-6 py-3">
                             Show CSV
@@ -152,20 +149,15 @@ const FileList = () => {
                                 {file.fileName}
                                 {/* {file.fileName.split('-')[0]} */}
                             </td>
-                            {file.data.map((ele)=>(
-                            <td>
-                                {ele["Dia."]}
-                            </td>
-                            ))}
                             <td className="px-6 py-4 cursor-pointer" onClick={() => handleOpen(file.fileName)}>
                                 <VisibilityIcon />
                             </td>
                         </tr>
-                    ))} 
+                    ))}
                 </tbody>
             </table>
         </div>
     );
 };
 
-export default FileList;
+export default KapanReport;
